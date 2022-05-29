@@ -8,9 +8,9 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
     if (!errors.isEmpty()) {
         let newErrors = errors.array()
         let countYoutubeUrl = 0
-        errors.array().forEach(e => e.param ==='youtubeUrl' && countYoutubeUrl++)
-        if(countYoutubeUrl>1){
-            newErrors = errors.array().filter((e) =>  !(e.param ==='youtubeUrl' && e.msg.includes('length 2-100 ')) )
+        errors.array().forEach(e => e.param === 'youtubeUrl' && countYoutubeUrl++)
+        if (countYoutubeUrl > 1) {
+            newErrors = errors.array().filter((e) => !(e.param === 'youtubeUrl' && e.msg.includes('length 2-100 ')))
         }
         res.status(400).json({
             resultCode: 1,
@@ -27,32 +27,42 @@ const credentials = {
     login: 'admin',
     password: 'qwerty'
 }
-let data = `${credentials.login}:${credentials.password}`;
+let data = `${credentials.login}:${credentials.password}`
 
 
 export let basicAuth = (req: Request, res: Response, next: NextFunction) => {
-    let buff = Buffer.from(data); //string from auth - hcsakj23nj
-    let base64data = buff.toString('base64'); //закодированная string под base64
+    let buff = Buffer.from(data) //string from auth - hcsakj23nj
+    let base64data = buff.toString('base64') //закодированная string под base64
     const validAuthValue = `Basic ${base64data}` //вся кодировка 'Basic  SDGSNstnsdgn' (admin:qwerty)
 
     let authHeader = req.headers.authorization
 
     if (authHeader && authHeader === validAuthValue) {
-        next();
-    } else res.send(401)
+        next()
+    } else res.sendStatus(401)
 }
 
 export let bearerAuth = async (req: Request, res: Response, next: NextFunction) => {
-    if(!req.headers.authorization){
+    if (!req.headers.authorization) {
         res.sendStatus(401)
         return
     }
     const token = req.headers.authorization.split(' ')[1] //deleted Bearer
     const userId = await jwtUtility.extractUserIdFromToken(token)
-    if(userId){
-        req.user = await usersService.getUserBy_id(userId)
-        next()
-    }else  res.sendStatus(401)
+    if (userId) {
+        const user = await usersService.getUserBy_id(userId)
+        if (user) {
+            req.user = user
+            next()
+            return
+        } else {
+            res.sendStatus(401)
+            return
+        }
+    } else {
+        res.sendStatus(401)
+        return
+    }
 }
 
 

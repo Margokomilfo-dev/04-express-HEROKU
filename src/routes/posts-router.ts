@@ -65,7 +65,7 @@ postsRouter.post('/:postId/comments', bearerAuth, commentContentValidation,
         }
         const content = req.body.content
         const comment = await commentsRepository.createComment(content, req.user!, postId)
-        res.send({id: comment.id, content: comment.content, userId: comment.userId, userLogin: comment.userLogin, addedAt: comment.addedAt})
+        res.status(201).send({id: comment.id, content: comment.content, userId: comment.userId, userLogin: comment.userLogin, addedAt: comment.addedAt})
     })
 postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
     const params = getQueryPaginationFromQueryString(req)
@@ -92,14 +92,14 @@ postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
 postsRouter.get('/:id', async (req: Request, res: Response) => {
     const id = req.params.id
     if (!id) {
-        res.send(400)
+        res.sendStatus(400)
         return
     }
     const post = await postService.getPostById(id)
     if (post) {
         res.send(post)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 })
 postsRouter.put('/:id', basicAuth,
@@ -110,7 +110,7 @@ postsRouter.put('/:id', basicAuth,
     inputValidationMiddleware, async (req: Request, res: Response) => {
         const id = req.params.id
         if (!id) {
-            res.send(400)
+            res.sendStatus(400)
             return
         }
         const title = req.body.title
@@ -129,16 +129,16 @@ postsRouter.put('/:id', basicAuth,
         const isUpdated = await postService.updatePost(id, title, shortDescription, content, bloggerId, blogger.name)
         if (isUpdated) {
             res.sendStatus(204)
-        } else res.send(404)
+        } else res.sendStatus(404)
     })
 postsRouter.delete('/:id', basicAuth, async (req: Request, res: Response) => {
     const id = req.params.id
     if (!id) {
-        res.send(400)
+        res.sendStatus(400)
         return
     }
     const isDeleted = await postService.deletePost(id)
     if (isDeleted) {
-        res.send(204)
-    } else res.send(404)
+        res.sendStatus(204)
+    } else res.sendStatus(404)
 })

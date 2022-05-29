@@ -24,14 +24,14 @@ bloggersRouter.get('/', async (req: Request, res: Response) => {
 bloggersRouter.get('/:id', async (req: Request, res: Response) => {
     const id = req.params.id
     if (!id) {
-        res.send(400)
+        res.sendStatus(400)
         return
     }
     const blogger = await bloggersService.findBloggerById(id)
     if (blogger) {
         res.send(blogger)
     } else {
-        res.send(404)
+        res.sendStatus(404)
     }
 
 })
@@ -40,7 +40,7 @@ bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
     const params = getQueryPaginationFromQueryString(req)
     const blogger = await bloggersService.findBloggerById(bloggerId)
     if(!blogger){
-        res.send(404)
+        res.sendStatus(404)
         return
     }
     const postsByBloggerId = await postService.getPostsByBloggerId(params.pageNumber,params.pageSize, bloggerId)
@@ -78,7 +78,7 @@ bloggersRouter.post('/:bloggerId/posts',basicAuth,
 
         const blogger = await bloggersService.findBloggerById(bloggerId)
         if(!blogger){
-            res.send(404)
+            res.sendStatus(404)
             return
         }
 
@@ -100,7 +100,7 @@ bloggersRouter.put('/:id',basicAuth,
     inputValidationMiddleware, async (req: Request, res: Response) => {
         const id = req.params.id
         if (!id) {
-            res.send(400)
+            res.sendStatus(400)
             return
         }
         const name = req.body.name
@@ -109,18 +109,18 @@ bloggersRouter.put('/:id',basicAuth,
         const isUpdated = await bloggersService.updateBlogger(id, name, youtubeUrl)
         if (isUpdated) {
             res.sendStatus(204)
-        } else res.send(404)
+        } else res.sendStatus(404)
     })
 
 bloggersRouter.delete('/:id', basicAuth, async (req: Request, res: Response) => {
     const id = req.params.id
     if (!id) {
-        res.send(400)
+        res.sendStatus(400)
         return
     }
     const isDeleted = await bloggersService.deleteBlogger(id)
     if (isDeleted) {
-        res.send(204)
-    } else res.send(404)
+        res.sendStatus(204)
+    } else res.sendStatus(404)
 })
 

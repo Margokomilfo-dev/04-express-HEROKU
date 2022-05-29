@@ -28,7 +28,9 @@ export const usersService = {
         return  usersRepository.deleteUser(id)
     },
     async getUserBy_id (_id:ObjectId): Promise<UserType | null> {
-        return  usersRepository.getUserBy_Id(_id)
+        const res = await usersRepository.getUserBy_Id(_id)
+        console.log(res)
+        return res
     },
     async findByCredentials(login: string, password: string): Promise<UserType | null>{
        const user = await usersRepository.findUserByLogin(login)

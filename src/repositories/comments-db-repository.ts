@@ -13,7 +13,7 @@ export type CommentType =WithId<{
 
 export const commentsRepository = {
     async getComment(id: string): Promise<CommentType | null> {
-        return comments.findOne({id}, {projection:{_id:0}})
+        return comments.findOne({id}, {projection:{_id:0, postId: 0}})
     },
     async getCommentsByPostId(postId: string,pageNumber:number, pageSize:number): Promise<Array<CommentType>> {
         return comments.find({postId}, {projection:{_id:0, postId: 0}}).skip(pageSize*(pageNumber-1)).limit(pageSize).toArray()
@@ -22,6 +22,7 @@ export const commentsRepository = {
         return comments.countDocuments({postId})
     },
     async createComment(content: string, user: UserType, postId: string): Promise<CommentType> {
+        console.log(user)
         const comment = {
             _id: new ObjectId(),
             id: new Date().getTime().toString(),
@@ -31,6 +32,7 @@ export const commentsRepository = {
             addedAt: new Date().toISOString(),
             postId
         }
+
         await comments.insertOne(comment, {forceServerObjectId:true})
         return comment
     },
