@@ -17,7 +17,7 @@ app.use(bodyParser.json())
 const port = process.env.PORT || 5005
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello: World!!!!- express (3 homework with MONGO DB)')
+    res.send('Hello, World!!!! 4 HW')
 })
 
 app.use('/auth', authRouter)
