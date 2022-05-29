@@ -20,14 +20,14 @@ export const postRepository = {
             return newPost
         } else return null
     },
-    async getPostById(id: number) {
+    async getPostById(id: string) {
         const post = await posts.findOne({id}, {projection:{_id:0}})
         if (post) {
             return post
         } else return null
     },
 
-    async updatePost(id: number, title: string, descr: string, content: string, bloggerId: number, bloggerName: string) {
+    async updatePost(id: string, title: string, descr: string, content: string, bloggerId: number, bloggerName: string) {
         await posts.findOneAndUpdate(
             {id},
             {$set: {title, shortDescription: descr, content, bloggerId, bloggerName}},
@@ -44,7 +44,7 @@ export const postRepository = {
         return true
     },
 
-    async deletePost(id: number) {
+    async deletePost(id: string) {
        return posts.findOneAndDelete({id})
     },
     async deletePosts(bloggerId: number) {

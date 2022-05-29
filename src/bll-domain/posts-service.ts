@@ -32,7 +32,7 @@ export const postService = {
     async createPost(title: string, descr: string, content: string, bloggerId: number) {
         const blogger = await bloggersRepository.findBloggerById(bloggerId)
         const newPost: PostType = {
-            id: +(new Date()),
+            id: new Date().getTime().toString(),
             title,
             shortDescription: descr,
             content,
@@ -41,11 +41,11 @@ export const postService = {
         }
         return await postRepository.createPost(newPost)
     },
-    async getPostById(id: number) {
+    async getPostById(id: string) {
         return await postRepository.getPostById(id)
     },
 
-    async updatePost(id: number, title: string, descr: string, content: string, bloggerId: number,bloggerName: string) {
+    async updatePost(id: string, title: string, descr: string, content: string, bloggerId: number,bloggerName: string) {
         const post = await postRepository.getPostById(id)
         if (!post) {
             return false
@@ -53,7 +53,7 @@ export const postService = {
        return await postRepository.updatePost(id, title,descr,content,bloggerId, bloggerName)
     },
 
-    async deletePost(id: number) {
+    async deletePost(id: string) {
         const res = await postRepository.deletePost(id)
         // console.log(res.value) //null or object
         // console.log(res.ok) // always 1

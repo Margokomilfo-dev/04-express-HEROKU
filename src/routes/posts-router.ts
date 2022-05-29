@@ -1,15 +1,19 @@
 import {Request, Response, Router} from 'express'
-
-
 import {bloggersRepository} from '../repositories/bloggers-db-repository'
 import {
     basicAuth,
+    bearerAuth,
     bloggerIdValidation,
-    contentValidation, getQueryPaginationFromQueryString, inputValidationMiddleware,
+    commentContentValidation,
+    contentValidation,
+    getQueryPaginationFromQueryString,
+    inputValidationMiddleware,
     shortDescriptionValidation,
     titleValidation
 } from '../middlewares/input-validation-middleware'
 import {postService} from '../bll-domain/posts-service'
+import {commentsRepository} from '../repositories/comments-db-repository'
+import {commentsService} from '../bll-domain/comments-service'
 
 export const postsRouter = Router({})
 
@@ -46,8 +50,47 @@ postsRouter.post('/', basicAuth,
             })
         }
     })
+
+postsRouter.post('/:postId/comments', bearerAuth, commentContentValidation,
+    inputValidationMiddleware, async (req: Request, res: Response) => {
+        const postId = req.params.postId
+        if(postId === undefined){
+            res.sendStatus(404)
+            return
+        }
+        const post = await postService.getPostById(postId.toString())
+        if(!post){
+            res.sendStatus(404)
+            return
+        }
+        const content = req.body.content
+        const comment = await commentsRepository.createComment(content, req.user!, postId)
+        res.send({id: comment.id, content: comment.content, userId: comment.userId, userLogin: comment.userLogin, addedAt: comment.addedAt})
+    })
+postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
+    const params = getQueryPaginationFromQueryString(req)
+    const postId = req.params.postId
+    if(postId === undefined){
+        res.sendStatus(404)
+        return
+    }
+    const post = await postService.getPostById(postId.toString())
+    if(!post){
+        res.sendStatus(404)
+        return
+    }
+    const comments = await commentsService.getCommentsByPostId(postId, params.pageNumber, params.pageSize)
+    const commentsCount = await commentsService.getCommentsCountByPostId(postId)
+    res.status(200).send({
+        pagesCount: Math.ceil(commentsCount / params.pageSize),
+        page: params.pageNumber,
+        pageSize: params.pageSize,
+        totalCount: commentsCount,
+        items: comments
+    })
+})
 postsRouter.get('/:id', async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id)
+    const id = req.params.id
     if (!id) {
         res.send(400)
         return
@@ -65,7 +108,7 @@ postsRouter.put('/:id', basicAuth,
     contentValidation,
     bloggerIdValidation,
     inputValidationMiddleware, async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id)
+        const id = req.params.id
         if (!id) {
             res.send(400)
             return
@@ -89,7 +132,7 @@ postsRouter.put('/:id', basicAuth,
         } else res.send(404)
     })
 postsRouter.delete('/:id', basicAuth, async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id)
+    const id = req.params.id
     if (!id) {
         res.send(400)
         return

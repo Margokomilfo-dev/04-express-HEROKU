@@ -1,5 +1,7 @@
 import {NextFunction, Request, Response} from 'express'
 import {body, validationResult} from 'express-validator'
+import {jwtUtility} from '../application/jwt-utility'
+import {usersService} from '../bll-domain/users-service'
 
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req)
@@ -26,25 +28,31 @@ const credentials = {
     password: 'qwerty'
 }
 let data = `${credentials.login}:${credentials.password}`;
-let buff = new Buffer(data);
-let base64data = buff.toString('base64');
+
 
 export let basicAuth = (req: Request, res: Response, next: NextFunction) => {
-    let authHeader = req.headers.authorization // 'Base  SDGSNstnsdgn' (admin:qwerty)
-    if (!authHeader) {
-        res.send(401)
-        return
-    }
-    if (authHeader && authHeader === `Basic ${base64data}`) {
+    let buff = Buffer.from(data); //string from auth - hcsakj23nj
+    let base64data = buff.toString('base64'); //закодированная string под base64
+    const validAuthValue = `Basic ${base64data}` //вся кодировка 'Basic  SDGSNstnsdgn' (admin:qwerty)
+
+    let authHeader = req.headers.authorization
+
+    if (authHeader && authHeader === validAuthValue) {
         next();
-    } else {
-        res.send(401)
-        return
-    }
+    } else res.send(401)
 }
 
-export let bearerAuth = (req: Request, res: Response, next: NextFunction) => {
-
+export let bearerAuth = async (req: Request, res: Response, next: NextFunction) => {
+    if(!req.headers.authorization){
+        res.sendStatus(401)
+        return
+    }
+    const token = req.headers.authorization.split(' ')[1] //deleted Bearer
+    const userId = await jwtUtility.extractUserIdFromToken(token)
+    if(userId){
+        req.user = await usersService.getUserBy_id(userId)
+        next()
+    }else  res.sendStatus(401)
 }
 
 
@@ -70,3 +78,11 @@ export const contentValidation = body('content').trim().isLength({min: 2, max: 1
     .withMessage('content is required and its length should be 2-100 symbols')
 export const bloggerIdValidation = body('bloggerId').isNumeric()
     .withMessage('bloggerId is required and its number')
+
+export const loginValidation = body('login').trim().isLength({min: 3, max: 10})
+    .withMessage('login is required and its length should be 3-10 symbols')
+export const passwordValidation = body('password').trim().isLength({min: 6, max: 20})
+    .withMessage('password is required and its length should be 6-20 symbols')
+
+export const commentContentValidation = body('content').trim().isLength({min: 20, max: 300})
+    .withMessage('content is required and its length should be 20-300 symbols')
