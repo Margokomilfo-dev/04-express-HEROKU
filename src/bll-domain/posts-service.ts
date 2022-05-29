@@ -14,7 +14,7 @@ export const postService = {
             items: foundPosts
         }
     },
-    async getPostsByBloggerId(pageNumber:number, pageSize:number,bloggerId: number): Promise<any> {
+    async getPostsByBloggerId(pageNumber:number, pageSize:number,bloggerId: string): Promise<any> {
         const allPostsByBloggerId= await postRepository.getAllPostsByBloggerId(bloggerId)
         const foundPosts = await postRepository.getPostsByBloggerId(pageNumber, pageSize,bloggerId)
         return {
@@ -26,10 +26,10 @@ export const postService = {
         }
 
     },
-    async getAllPostsByBloggerId(bloggerId: number): Promise<PostType[]> {
+    async getAllPostsByBloggerId(bloggerId: string): Promise<PostType[]> {
         return await postRepository.getAllPostsByBloggerId(bloggerId)
     },
-    async createPost(title: string, descr: string, content: string, bloggerId: number) {
+    async createPost(title: string, descr: string, content: string, bloggerId: string) {
         const blogger = await bloggersRepository.findBloggerById(bloggerId)
         const newPost: PostType = {
             id: new Date().getTime().toString(),
@@ -45,7 +45,7 @@ export const postService = {
         return await postRepository.getPostById(id)
     },
 
-    async updatePost(id: string, title: string, descr: string, content: string, bloggerId: number,bloggerName: string) {
+    async updatePost(id: string, title: string, descr: string, content: string, bloggerId: string,bloggerName: string) {
         const post = await postRepository.getPostById(id)
         if (!post) {
             return false

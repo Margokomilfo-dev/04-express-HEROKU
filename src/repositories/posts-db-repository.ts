@@ -8,10 +8,10 @@ export const postRepository = {
     async getAllPostsCount(): Promise<number> {
         return posts.countDocuments()
     },
-    async getPostsByBloggerId(pageNumber:number, pageSize:number,bloggerId: number): Promise<any> {
+    async getPostsByBloggerId(pageNumber:number, pageSize:number,bloggerId: string): Promise<any> {
         return posts.find({bloggerId}, {projection:{_id:0}}).skip(pageSize*(pageNumber-1)).limit(pageSize).toArray()
     },
-    async getAllPostsByBloggerId(bloggerId: number): Promise<PostType[]> {
+    async getAllPostsByBloggerId(bloggerId: string): Promise<PostType[]> {
         return posts.find({bloggerId}, {projection:{_id:0}}).toArray()
     },
     async createPost(newPost: PostType) {
@@ -27,7 +27,7 @@ export const postRepository = {
         } else return null
     },
 
-    async updatePost(id: string, title: string, descr: string, content: string, bloggerId: number, bloggerName: string) {
+    async updatePost(id: string, title: string, descr: string, content: string, bloggerId: string, bloggerName: string) {
         await posts.findOneAndUpdate(
             {id},
             {$set: {title, shortDescription: descr, content, bloggerId, bloggerName}},
@@ -35,7 +35,7 @@ export const postRepository = {
         )
         return true
     },
-    async updatePosts(bloggerId: number, bloggerName: string) {
+    async updatePosts(bloggerId: string, bloggerName: string) {
         await posts.updateMany(
             {bloggerId},
             {$set: {bloggerName}},
@@ -47,7 +47,7 @@ export const postRepository = {
     async deletePost(id: string) {
        return posts.findOneAndDelete({id})
     },
-    async deletePosts(bloggerId: number) {
+    async deletePosts(bloggerId: string) {
         await posts.deleteMany({bloggerId})
     }
 }

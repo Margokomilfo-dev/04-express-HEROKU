@@ -16,18 +16,18 @@ export const bloggersService = {
 
     async createBlogger(name: string, url: string): Promise<BloggerType | null> {
         const newBlogger: BloggerType = {
-            id: +(new Date()),
+            id: new Date().getTime().toString(),
             name: name,
             youtubeUrl: url,
         }
         return  bloggersRepository.createBlogger(newBlogger)
     },
 
-    async findBloggerById(id: number):Promise<BloggerType | null> {
+    async findBloggerById(id: string):Promise<BloggerType | null> {
       return bloggersRepository.findBloggerById(id)
     },
 
-    async updateBlogger(id: number, name: string, url: string): Promise<boolean> {
+    async updateBlogger(id: string, name: string, url: string): Promise<boolean> {
         const isBlogger = await bloggersRepository.findBloggerById(id)
         if(!isBlogger){
             return false
@@ -35,7 +35,7 @@ export const bloggersService = {
         return bloggersRepository.updateBlogger(id, name,url)
     },
 
-    async deleteBlogger(id: number) {
+    async deleteBlogger(id: string) {
         return bloggersRepository.deleteBlogger(id)
     }
 

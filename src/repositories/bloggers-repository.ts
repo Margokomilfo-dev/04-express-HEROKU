@@ -1,8 +1,8 @@
-export type BloggerType = { id: number, name: string, youtubeUrl: string }
+export type BloggerType = { id: string, name: string, youtubeUrl: string }
 let bloggers = [
-    {id: 1, name: 'blogger1', youtubeUrl: 'youtube1.com'},
-    {id: 2, name: 'blogger2', youtubeUrl: 'youtube2.com'},
-    {id: 3, name: 'blogger3', youtubeUrl: 'youtube3.com'}
+    {id: '1', name: 'blogger1', youtubeUrl: 'youtube1.com'},
+    {id: '2', name: 'blogger2', youtubeUrl: 'youtube2.com'},
+    {id: '3', name: 'blogger3', youtubeUrl: 'youtube3.com'}
 ]
 
 export const bloggersRepository = {
@@ -16,7 +16,7 @@ export const bloggersRepository = {
     createBlogger(name: string, url: string) {
         const bloggerLength = bloggers.length
         const newBlogger: BloggerType = {
-            id: +(new Date()),
+            id: new Date().getTime().toString(),
             name: name,
             youtubeUrl:url,
         }
@@ -27,7 +27,7 @@ export const bloggersRepository = {
            return null
         }
     },
-    findBloggerById(id: number){
+    findBloggerById(id: string){
         const blogger = bloggers.find(b => b.id === id)
         if (blogger) {
             return blogger
@@ -35,7 +35,7 @@ export const bloggersRepository = {
             return null
         }
     },
-    updateBlogger(id: number, name: string, url: string){
+    updateBlogger(id: string, name: string, url: string){
         const blogger = bloggers.find(b => b.id === id)
         if (blogger) {
             bloggers = bloggers.map(b => {
@@ -46,7 +46,7 @@ export const bloggersRepository = {
             return true
         } else return false
     },
-    deleteBlogger (id: number) {
+    deleteBlogger (id: string) {
         if (id) {
             let newBloggers = bloggers.filter(b => b.id !== id)
             if (newBloggers.length < bloggers.length) {

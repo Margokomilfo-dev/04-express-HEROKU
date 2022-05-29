@@ -29,11 +29,11 @@ export const bloggersRepository = {
         }
     },
 
-    async findBloggerById(id: number) {
+    async findBloggerById(id: string) {
         return  bloggers.findOne({id},{projection:{_id:0}})
     },
 
-    async updateBlogger(id: number, name: string, url: string) {
+    async updateBlogger(id: string, name: string, url: string) {
         const myBlogger = await bloggers.findOneAndUpdate(
             {id},
             {$set: {name, youtubeUrl: url}},
@@ -45,7 +45,7 @@ export const bloggersRepository = {
         return !!myBlogger
     },
 
-    async deleteBlogger(id: number) {
+    async deleteBlogger(id: string) {
         await postRepository.deletePosts(id)
         const deleted = await bloggers.deleteOne({id})
         return deleted.deletedCount > 0;

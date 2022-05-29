@@ -10,9 +10,9 @@ export type PostType = {
     bloggerName?: string
 }
 let posts: Array<PostType> = [
-    {id: '1', title: 'title1', shortDescription: 'shortDescription1', content: 'content1', bloggerId: 1},
-    {id: '2', title: 'title2', shortDescription: 'shortDescription2', content: 'content1', bloggerId: 1},
-    {id: '3', title: 'title3', shortDescription: 'shortDescription3', content: 'content1', bloggerId: 2},
+    {id: '1', title: 'title1', shortDescription: 'shortDescription1', content: 'content1', bloggerId: '1'},
+    {id: '2', title: 'title2', shortDescription: 'shortDescription2', content: 'content1', bloggerId: '1'},
+    {id: '3', title: 'title3', shortDescription: 'shortDescription3', content: 'content1', bloggerId: '2'},
 ]
 export const postRepository ={
     async getPosts(){
@@ -22,7 +22,7 @@ export const postRepository ={
         })
        return newPosts
     },
-    async createPost(title:string, descr: string, content: string, bloggerId: number){
+    async createPost(title:string, descr: string, content: string, bloggerId: string){
         const postsLength = posts.length
         const newPost: PostType = {
             id: new Date().getTime().toString(),
@@ -46,7 +46,7 @@ export const postRepository ={
             } else return null
         } else return null
     },
-    async updatePost(id:string,title:string, descr: string, content: string, bloggerId: number){
+    async updatePost(id:string,title:string, descr: string, content: string, bloggerId: string){
         const post = posts.find(p => p.id === id)
         if (post) {
             posts = posts.map(p => {

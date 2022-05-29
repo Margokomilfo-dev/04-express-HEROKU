@@ -22,7 +22,7 @@ bloggersRouter.get('/', async (req: Request, res: Response) => {
     res.status(200).send(bloggers)
 })
 bloggersRouter.get('/:id', async (req: Request, res: Response) => {
-    const id = +req.params.id
+    const id = req.params.id
     if (!id) {
         res.send(400)
         return
@@ -36,7 +36,7 @@ bloggersRouter.get('/:id', async (req: Request, res: Response) => {
 
 })
 bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
-    const bloggerId = parseInt(req.params.bloggerId)
+    const bloggerId = req.params.bloggerId
     const params = getQueryPaginationFromQueryString(req)
     const blogger = await bloggersService.findBloggerById(bloggerId)
     if(!blogger){
@@ -71,8 +71,7 @@ bloggersRouter.post('/:bloggerId/posts',basicAuth,
     shortDescriptionValidation,
     contentValidation,
     inputValidationMiddleware, async (req: Request, res: Response) => {
-        const bloggerId = parseInt(req.params.bloggerId)
-
+        const bloggerId = req.params.bloggerId
         const title = req.body.title
         const shortDescription = req.body.shortDescription
         const content = req.body.content
@@ -99,7 +98,7 @@ bloggersRouter.put('/:id',basicAuth,
     youtubeUrlValidation1,
     youtubeUrlValidation2,
     inputValidationMiddleware, async (req: Request, res: Response) => {
-        const id = parseInt(req.params.id)
+        const id = req.params.id
         if (!id) {
             res.send(400)
             return
@@ -114,7 +113,7 @@ bloggersRouter.put('/:id',basicAuth,
     })
 
 bloggersRouter.delete('/:id', basicAuth, async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id)
+    const id = req.params.id
     if (!id) {
         res.send(400)
         return
