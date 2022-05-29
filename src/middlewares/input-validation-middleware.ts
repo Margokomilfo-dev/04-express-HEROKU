@@ -23,6 +23,15 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
         next()
     }
 }
+export const authValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        let newErrors = errors.array()
+        res.sendStatus(401)
+    } else {
+        next()
+    }
+}
 const credentials = {
     login: 'admin',
     password: 'qwerty'

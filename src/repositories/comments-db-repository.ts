@@ -22,7 +22,6 @@ export const commentsRepository = {
         return comments.countDocuments({postId})
     },
     async createComment(content: string, user: UserType, postId: string): Promise<CommentType> {
-        console.log(user)
         const comment = {
             _id: new ObjectId(),
             id: new Date().getTime().toString(),
